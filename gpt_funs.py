@@ -7,7 +7,7 @@ import preprocess
 
 
 # def preprocess(file_path):
-openai.api_key = "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"
+openai.api_key = [Enter Key]
 
 
 # Reads one text file and processes it with chat gpt and documents and answers the questions and returns one text file back
