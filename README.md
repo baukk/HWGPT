@@ -30,6 +30,12 @@ pip install -r requirements.txt
 ```
 Ensure you have Python 3 and pip installed on your system before running these commands. If you encounter any issues during the installation, consider upgrading pip or using a virtual environment.
 
+### Enter your chat-GPT API key
+```
+Edit the gpt_funs.py file at LINE 10. Add your API key there
+```
+[How to get free OpenAI API secret key](https://openaimaster.com/how-to-get-openai-api-key-for-free/)
+
 ### Step 3: Run the Application
 Once all the dependencies are installed, you can start the application by running the `root.py` script:
 ```
@@ -48,7 +54,7 @@ We welcome contributions from the community. If you'd like to improve the HW-GPT
 We would love any kind of suggestions on issues with the project and would work on them.
 
 ## Future Plans
-We are working on a web app for the same project which will make using easily it on a mobile/PC for everyone.
+We are working on a web app for the same project which will make using it on a mobile/PC for everyone.
 
 ## Contact
 Mail: gaurtanay6@gmail.com
