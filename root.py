@@ -1,7 +1,7 @@
 import glob
 import os.path
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, END
 from tkinter import filedialog
 import shutil
 import os
@@ -13,35 +13,28 @@ import customtkinter
 from tkinter import scrolledtext
 
 # -------------------------- DEFINING GLOBAL VARIABLES -------------------------
-import root
 selectionbar_color = '#eff5f6'
 sidebar_color = '#F5E1FD'
 header_color = sidebar_color
 visualisation_frame_color = "#ffffff"
 customtkinter.set_default_color_theme("dark-blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-
+pathh = ""
 # ------------------------------- ROOT WINDOW ----------------------------------
 
 
 class TkinterApp(tk.Tk):
-    """
-     The class creates a header and sidebar for the application. Also creates
-     two submenus in the sidebar, one for attendance overview with options to
-     track students and modules, view poor attendance and another for
-     database management, with options to update and add new modules to the
-     database.
-    """
+
     pathh = ""
     def __init__(self):
         tk.Tk.__init__(self)
-        self.title("Attendance Tracking App")
+        self.title("HW GPT")
 
         # ------------- BASIC APP LAYOUT -----------------
 
         self.geometry("1100x700")
         self.resizable(0, 0)
-        self.title('Attendance Tracking System')
+        self.title('HW GPT')
         self.config(background=selectionbar_color)
         icon = tk.PhotoImage(file='images/logo.png')
         self.iconphoto(True, icon)
@@ -124,9 +117,9 @@ class TkinterApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (Frame1,
+        for F in (Frame3,
                   Frame2,
-                  Frame3
+                  Frame1
                   ):
             frame = F(container, self)
             self.frames[F] = frame
@@ -196,10 +189,13 @@ class Frame1(tk.Frame):
         Frame1.test = self.test
         # Open file dialog for selecting PDF file
         file_path = filedialog.askopenfilename(filetypes=[("PDF Files", "*.pdf")])
-        
+
         # set_path(self, newpath=file_path, frame=Frame2)
         self.file_name = os.path.basename(file_path)
-        Frame1.file_name = self.file_name
+        # Frame1.file_name = self.file_name
+        global pathh
+        pathh = self.file_name
+        print("Pathh:", pathh)
         if file_path:
             # Specify the destination directory
             destination_dir = "./uploads"
@@ -259,7 +255,6 @@ class Frame1(tk.Frame):
 
     def preview_pdf(self, file_path):
         pass
-
 print(pathh)
 # obj = Frame1(Frame1, Frame1)
 # obj.modify_a()
@@ -267,6 +262,7 @@ print(pathh)
 # frame1_instance.open_upload_dialog()  # Call the method to update file_name
 # print(Frame1.file_name + "hello")
 class Frame2(tk.Frame):
+    global pathh
     file_name = ""
     def __init__(self, parent, controller, **kwargs):
         tk.Frame.__init__(self, parent)
@@ -277,24 +273,45 @@ class Frame2(tk.Frame):
         label.pack(padx=10, pady=8)
         self.text_area = scrolledtext.ScrolledText(self, font=("Times New Roman", 15))
         # self.text_area.insert(tk.INSERT, f'./uploads/text/{self.name}/merged.txt')
-        self.text_area.place(relx=0.51, rely=0.35, relwidth=0.9, relheight=0.5, anchor="center")
+        self.text_area.place(relx=0.51, rely=0.55, relwidth=0.9, relheight=0.7, anchor="center")
         load_button = tk.Button(self, text="Load", command=self.load_text)
-        load_button.place(relx=0.51, rely=0.25, relwidth=0.1, relheight=0.05, anchor="center")
+        load_button.place(relx=0.11, rely=0.15, relwidth=0.1, relheight=0.05, anchor="center")
+        save_button = tk.Button(self, text="Save Changes", command=self.save_text)
+        save_button.place(relx=0.11, rely=0.95, relwidth=0.1, relheight=0.05, anchor="center")
+        view_answers = tk.Button(self, text="Check Answers", command= lambda: [controller.show_frame(Frame3), lambda: gpt_funs.format_entire_pdf(f"./uploads/{pathh.split('.')[0]}")])
+
+
+        view_answers.place(relx=0.81, rely=0.95, relwidth=0.1, relheight=0.05, anchor="center")
+
         # print(Frame2.test)
         # print(Frame1.test)
 
     def load_text(self):
-        self.text_area.insert(tk.INSERT, f'./uploads/text/{self.name}/merged.txt')
-    print(file_name+"check")
+        merged_text = open(f'./uploads/text/{pathh.split(".")[0]}/merged.txt', 'r', encoding="utf-8")
+        self.text_area.insert(tk.INSERT,merged_text.read())
+
+    def save_text(self):
+        text_file = open(f'./uploads/text/{pathh.split(".")[0]}/merged.txt', 'w', encoding="utf-8")
+        text_file.write(self.text_area.get(1.0, END))
+        text_file.close()
+    print(pathh+"check")
 
 class Frame3(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        self.text_area = tk.Text(self, wrap=tk.WORD)
+        self.frame3_header = tk.Frame(self, bg="Grey")
+        self.frame3_header.pack(fill=tk.X)
+        label = tk.Label(self.frame3_header, text=' Solutions', font=("Arial", 18, "bold"),
+                         bg="grey", fg='white')
+        label.pack(padx=10, pady=8)
+        load_button = tk.Button(self, text="Load", command= lambda :[gpt_funs.format_entire_pdf(f"./uploads/text/{pathh.split('.')[0]}"), self.loadsolvedtxt(f"uploads/text/{pathh.split('.')[0]}/ansmerged.txt")])
+        load_button.place(relx=0.11, rely=0.15, relwidth=0.1, relheight=0.05, anchor="center")
 
-        label = tk.Label(self, text='Frame 3', font=("Arial", 15))
-        label.pack()
-
-
+    def loadsolvedtxt(self, path):
+        solved_text = open(path, 'r', encoding="utf-8")
+        self.text_area.insert(tk.INSERT,solved_text.read())
+        self.text_area.place(relx=0.51, rely=0.55, relwidth=0.9, relheight=0.7, anchor="center")
 # ----------------------------- CUSTOM WIDGETS ---------------------------------
 
 class SidebarSubMenu(tk.Frame):

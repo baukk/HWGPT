@@ -7,7 +7,7 @@ import preprocess
 
 
 # def preprocess(file_path):
-openai.api_key = "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"
+openai.api_key = "Enter your ChatGPT API key here"
 
 
 # Reads one text file and processes it with chat gpt and documents and answers the questions and returns one text file back
@@ -48,6 +48,7 @@ def gpt_format_page(page_path):
 def merge_into_one_text_file(folder_path):
     output_file = f'{folder_path}/merged.txt'
     input_files = os.listdir(folder_path)
+    print(input_files, "input files")
     input_files = [f"{folder_path}/"+ file_name for file_name in input_files]
     print(input_files)
 
@@ -63,12 +64,22 @@ def merge_into_one_text_file(folder_path):
 
 # recieves the folder created by pdf2folder(pdf to text of all pages into one folder) and processes each page with gpt_format_page and saves the output in a new folder
 def format_entire_pdf(folder_path):
-    output_file = f"Solved_{folder_path}.txt"
+    print("start")
+
+    output_file = f"{folder_path}/ansmerged.txt"
     input_files = os.listdir(folder_path)
+    # input_files.remove("merged.txt")
+    input_files.remove("merged.txt")
+    input_files = [f"{folder_path}/" + file_name for file_name in input_files]
     with open(output_file, 'w', encoding='utf-8') as output:
+        print(enumerate(input_files))
+        print("in")
+        print("hellocheckennumerate")
         for i, file in enumerate(input_files):
-            processed_text = gpt_format_page(f"output_folder/{file}")
+            processed_text = gpt_format_page(f"{folder_path}/{folder_path.split('/')[-1]}.pdf_page{i + 1}.txt")
             output.write("Page # {}\n".format(i + 1))
             output.write(processed_text + "\n\n")
             print("Page # {} processed.".format(i + 1))
     print("Text extracted and saved to", output_file)
+def test():
+    print(2+2)
